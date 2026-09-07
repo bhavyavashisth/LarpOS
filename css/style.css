@@ -119,3 +119,67 @@ body {
   border-color: #4a5a66;
   color: #d4e2ed;
 }
+/*Desktop*/
+#desktop {
+  width: 100vw;
+  height: 100vh;
+  background: #1a1e24;
+  background-image: radial-gradient(circle at 20% 30%, #2d3a44 0%, #0e1218 90%);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/*Top bar*/
+.topbar {
+  height: 32px;
+  background: rgba(20, 26, 32, 0.72);
+  backdrop-filter: blur(22px) saturate(1.2);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 0.75rem;
+  color: #d2dee8;
+  flex-shrink: 0;
+  justify-content: space-between;
+}
+
+.topbar-left, .topbar-right { display: flex; align-items: center; gap: 14px; }
+.topbar-left .logo {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  background: rgba(255,255,255,0.04);
+  padding: 0 12px 0 8px;
+  border-radius: 30px;
+  line-height: 24px;
+  font-size: 0.7rem;
+  color: #b2ccdd;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar-menu { display: flex; gap: 12px; font-size: 0.7rem; color: #b0c6d4; }
+.topbar-menu span { cursor: default; opacity: 0.8; }
+.topbar-menu span:hover { opacity: 1; }
+
+.topbar-time {
+  background: rgba(0,0,0,0.2);
+  padding: 0 12px;
+  border-radius: 30px;
+  line-height: 24px;
+  font-size: 0.7rem;
+  color: #c8dae6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/*Desktop area*/
+.desktop-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
