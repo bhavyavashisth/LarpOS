@@ -1,4 +1,3 @@
-
 export default class Boot {
   constructor(onComplete) {
     this.onComplete = onComplete;
