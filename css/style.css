@@ -183,3 +183,85 @@ body {
   position: relative;
   overflow: hidden;
 }
+/*Windows*/
+.window {
+  position: absolute;
+  background: #1e262e;
+  border-radius: 14px;
+  border: 1px solid #2f3a44;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02);
+  min-width: 280px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(4px);
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.window.active {
+  box-shadow: 0 16px 48px rgba(0,0,0,0.8), 0 0 0 1px rgba(100,180,255,0.08);
+  border-color: #3d5265;
+}
+
+.window-header {
+  height: 38px;
+  background: rgba(30, 38, 46, 0.8);
+  border-radius: 14px 14px 0 0;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 10px;
+  flex-shrink: 0;
+  cursor: grab;
+  border-bottom: 1px solid #29333c;
+}
+
+.window-header:active { cursor: grabbing; }
+
+.window-controls { display: flex; gap: 7px; margin-right: 6px; }
+.window-controls span {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  transition: 0.1s;
+  cursor: pointer;
+}
+
+.win-close { background: #ed6a5e; }
+.win-min { background: #f5bd4f; }
+.win-max { background: #61c354; }
+
+.window-title {
+  flex: 1;
+  font-size: 0.75rem;
+  color: #b8ccdb;
+  letter-spacing: 0.2px;
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.window-body {
+  flex: 1;
+  padding: 14px;
+  overflow: auto;
+  color: #c8dae6;
+  font-size: 0.8rem;
+  background: #131a20;
+  border-radius: 0 0 14px 14px;
+}
+
+.window-body.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a5f6e;
+  font-style: italic;
+  flex-direction: column;
+  gap: 8px;
+}
