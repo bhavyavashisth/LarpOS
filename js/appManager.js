@@ -1,4 +1,4 @@
-
+// js/appManager.js - Application manager
 import TerminalApp from './apps/terminal.js';
 import FilesApp from './apps/files.js';
 import NotesApp from './apps/notes.js';
@@ -38,17 +38,20 @@ export default class AppManager {
     const appDef = this.apps[id];
     if (!appDef) return;
 
-    
+    // Create app instance
     const appInstance = new appDef.class(this.fs, this);
     const body = this.wm.getBody(winData);
     
-    body.innerHTML = '';
-    appInstance.render(body);
-
-    this.runningApps[id] = winData;
-    winData.onClose = () => {
-      if (appInstance.onClose) appInstance.onClose();
-      delete this.runningApps[id];
-    };
+    // Clear the body and render the app
+    if (body) {
+      body.innerHTML = '';
+      appInstance.render(body);
+      this.runningApps[id] = winData;
+      
+      winData.onClose = () => {
+        if (appInstance.onClose) appInstance.onClose();
+        delete this.runningApps[id];
+      };
+    }
   }
 }

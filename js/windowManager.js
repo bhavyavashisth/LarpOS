@@ -1,3 +1,4 @@
+// js/windowManager.js - Window management
 export default class WindowManager {
   constructor() {
     this.windows = [];
@@ -34,6 +35,11 @@ export default class WindowManager {
     const body = document.createElement('div');
     body.className = 'window-body';
     body.id = `win-body-${win.dataset.windowId}`;
+    // Set initial placeholder
+    body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#4a5f6e;font-style:italic;flex-direction:column;gap:8px;">
+      <i class="${icon}" style="font-size:2rem;color:#3a4f5e;"></i>
+      <span>Loading ${title}...</span>
+    </div>`;
 
     win.appendChild(header);
     win.appendChild(body);
