@@ -1,11 +1,9 @@
-// js/apps/browser.js - LARP Browser
 export default class BrowserApp {
   constructor(fs) {
     this.fs = fs;
     this.history = [];
     this.bookmarks = [];
-    this.tabs = [{ url: 'about:larp', title: 'LARP Browser' }];
-    this.currentTab = 0;
+    this.currentUrl = 'about:larp';
     this.sites = {
       'asan.larp': {
         title: 'ASAN - Advanced Space Agency of Nothing',
@@ -135,18 +133,7 @@ export default class BrowserApp {
           <button id="browser-home"><i class="fas fa-home"></i></button>
         </div>
         <div class="browser-content" id="browser-content" style="flex:1;padding:16px;overflow-y:auto;">
-          <div style="text-align:center;padding:60px 20px;">
-            <i class="fas fa-compass" style="font-size:4rem;color:#6a8a9e;"></i>
-            <h2 style="color:#d4e2ed;font-weight:300;margin-top:16px;">LARP Browser</h2>
-            <p style="color:#6a7a84;">Enter a URL or click a bookmark</p>
-            <div style="display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;">
-              ${Object.keys(this.sites).map(s => `
-                <div class="site-card" style="background:#1a222a;border:1px solid #2a343e;border-radius:8px;padding:12px 20px;cursor:pointer;transition:0.1s;" data-url="${s}">
-                  <h4 style="color:#d4e2ed;">${s}</h4>
-                </div>
-              `).join('')}
-            </div>
-          </div>
+          <div id="browser-page"></div>
         </div>
       </div>
     `;
@@ -154,6 +141,7 @@ export default class BrowserApp {
     this.container = container;
     this.urlInput = container.querySelector('#browser-url');
     this.content = container.querySelector('#browser-content');
+    this.pageContainer = container.querySelector('#browser-page');
 
     container.querySelector('#browser-back').addEventListener('click', () => this.goBack());
     container.querySelector('#browser-forward').addEventListener('click', () => this.goForward());
@@ -163,14 +151,18 @@ export default class BrowserApp {
 
     this.urlInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        this.navigate(this.urlInput.value);
+        const value = this.urlInput.value.trim();
+        if (value.startsWith('http://') || value.startsWith('https://')) {
+          this.navigate(value);
+        } else if (value.includes('youtube') || value.includes('youtube.com') || value.includes('youtu.be')) {
+          //Rickroll!
+          this.loadRickroll();
+        } else if (value.includes('.')) {
+          this.navigate(value);
+        } else {
+          this.search(value);
+        }
       }
-    });
-
-    container.querySelectorAll('.site-card').forEach(card => {
-      card.addEventListener('click', () => {
-        this.navigate(card.dataset.url);
-      });
     });
 
     this.currentUrl = 'about:larp';
@@ -178,9 +170,6 @@ export default class BrowserApp {
   }
 
   navigate(url) {
-    if (this.currentUrl) {
-      this.history.push(this.currentUrl);
-    }
     this.currentUrl = url;
     this.urlInput.value = url;
     this.loadPage(url);
@@ -205,7 +194,6 @@ export default class BrowserApp {
           </div>
         </div>
       `;
-      title = 'LARP Browser';
     } else if (this.sites[url]) {
       content = this.sites[url].content;
       title = this.sites[url].title;
@@ -220,31 +208,51 @@ export default class BrowserApp {
       `;
     }
 
-    this.content.innerHTML = content;
-    // Store title for tab
+    this.pageContainer.innerHTML = content;
     this.currentTitle = title;
   }
 
-  goBack() {
-    if (this.history.length > 0) {
-      const url = this.history.pop();
-      this.navigate(url);
+  search(query) {
+    if (query.toLowerCase().includes('youtube')) {
+      this.loadRickroll();
+    } else {
+      this.pageContainer.innerHTML = `
+        <div style="text-align:center;padding:60px 20px;">
+          <i class="fas fa-search" style="font-size:4rem;color:#6a8a9e;"></i>
+          <h2 style="color:#d4e2ed;font-weight:300;margin-top:16px;">Search: "${query}"</h2>
+          <p style="color:#6a7a84;">No results found in LARPiverse.</p>
+          <p style="color:#6a7a84;font-size:0.7rem;margin-top:8px;">Try searching for "youtube" to get Rickrolled.</p>
+        </div>
+      `;
     }
   }
 
-  goForward() {
-    // Simple forward - just reload current
-    this.refresh();
+  loadRickroll() {
+    this.pageContainer.innerHTML = `
+      <div style="padding:20px;text-align:center;">
+        <h2 style="color:#f5c542;margin-bottom:16px;">🎵 You've been Rickrolled!</h2>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;border-radius:8px;">
+          <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
+            frameborder="0" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen>
+          </iframe>
+        </div>
+        <p style="color:#6a7a84;margin-top:12px;">There is no patch.</p>
+      </div>
+    `;
+    this.currentUrl = 'youtube-rickroll';
+    this.urlInput.value = 'youtube-rickroll';
+    if (this.appManager) {
+      this.appManager.launch('music');
+    }
   }
 
-  refresh() {
-    this.loadPage(this.currentUrl);
-  }
-
-  goHome() {
-    this.navigate('about:larp');
-  }
-
+  goBack() { /*simple reload*/ this.refresh(); }
+  goForward() { this.refresh(); }
+  refresh() { this.loadPage(this.currentUrl); }
+  goHome() { this.navigate('about:larp'); }
   bookmarkPage() {
     if (this.currentUrl && this.currentUrl !== 'about:larp') {
       if (!this.bookmarks.includes(this.currentUrl)) {
@@ -255,7 +263,6 @@ export default class BrowserApp {
   }
 }
 
-// Expose for inline navigation
 window.__larp_browser_navigate = (url) => {
   const app = document.querySelector('.browser-app');
   if (app) {

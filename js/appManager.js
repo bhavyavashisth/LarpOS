@@ -37,11 +37,9 @@ export default class AppManager {
     const appDef = this.apps[id];
     if (!appDef) return;
 
-    // Create app instance
     const appInstance = new appDef.class(this.fs, this);
     const body = this.wm.getBody(winData);
     
-    // Clear the body and render the app
     if (body) {
       body.innerHTML = '';
       appInstance.render(body);
