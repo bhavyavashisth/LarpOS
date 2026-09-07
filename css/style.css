@@ -338,3 +338,228 @@ body {
 .ctx-sep { height: 1px; background: #2a343e; margin: 4px 12px; }
 
 .hidden { display: none; }
+
+/*App styles*/
+.terminal-app {
+  font-family: 'Menlo', 'Monaco', 'Fira Code', monospace;
+  background: #0d1117;
+  color: #c9d1d9;
+  height: 100%;
+  padding: 8px 12px;
+  overflow-y: auto;
+}
+
+.terminal-input-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.terminal-prompt {
+  color: #5bc97a;
+  font-weight: 500;
+}
+
+.terminal-input {
+  background: transparent;
+  border: none;
+  color: #c9d1d9;
+  font-family: inherit;
+  font-size: 0.85rem;
+  flex: 1;
+  outline: none;
+}
+
+.terminal-output { margin: 2px 0; line-height: 1.6; }
+.terminal-error { color: #e4646a; }
+.terminal-success { color: #5bc97a; }
+.terminal-highlight { color: #f5c542; }
+
+/*Files app*/
+.files-app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #141a20;
+}
+
+.files-toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #2a343e;
+  background: #1a222a;
+}
+
+.files-toolbar button {
+  background: transparent;
+  border: none;
+  color: #b0c6d4;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.files-toolbar button:hover { background: #2a343e; }
+
+.files-path {
+  flex: 1;
+  background: #0d1117;
+  border: 1px solid #2a343e;
+  border-radius: 4px;
+  padding: 2px 10px;
+  color: #c8dae6;
+  font-size: 0.75rem;
+  font-family: monospace;
+}
+
+.files-grid {
+  flex: 1;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  overflow-y: auto;
+  align-content: start;
+}
+
+.file-item {
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.1s;
+}
+
+.file-item:hover { background: #1e2a34; }
+.file-item i { font-size: 2rem; color: #6a8a9e; display: block; margin-bottom: 4px; }
+.file-item .file-name { font-size: 0.7rem; color: #b0c6d4; word-break: break-all; }
+
+/*Notes app */
+.notes-app {
+  height: 100%;
+  display: flex;
+  background: #141a20;
+}
+
+.notes-sidebar {
+  width: 180px;
+  background: #1a222a;
+  border-right: 1px solid #2a343e;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.notes-list { list-style: none; }
+.notes-list li {
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: #b0c6d4;
+  margin-bottom: 2px;
+}
+
+.notes-list li:hover { background: #2a343e; }
+.notes-list li.active { background: #2a3a48; color: #d4e2ed; }
+
+.notes-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+}
+
+.notes-editor textarea {
+  flex: 1;
+  background: #0d1117;
+  border: 1px solid #2a343e;
+  border-radius: 8px;
+  color: #c8dae6;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  resize: none;
+  outline: none;
+}
+
+.notes-editor textarea:focus { border-color: #3d5265; }
+
+/*Music app*/
+.music-app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #141a20;
+}
+
+.music-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #2a343e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.music-header h3 { color: #d4e2ed; font-weight: 500; }
+
+.music-player {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.music-artwork {
+  width: 160px;
+  height: 160px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2a3a48, #1a222a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.music-artwork i { font-size: 4rem; color: #6a8a9e; }
+
+.music-controls {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.music-controls button {
+  background: transparent;
+  border: none;
+  color: #b0c6d4;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: 0.1s;
+}
+
+.music-controls button:hover { background: #2a343e; }
+.music-controls .play-btn { font-size: 2rem; color: #5bc97a; }
+
+.music-progress {
+  width: 100%;
+  max-width: 400px;
+  height: 4px;
+  background: #2a343e;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.music-progress-fill {
+  height: 100%;
+  background: #5bc97a;
+  border-radius: 2px;
+  width: 0%;
+}
