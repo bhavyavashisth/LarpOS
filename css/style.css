@@ -563,3 +563,221 @@ body {
   border-radius: 2px;
   width: 0%;
 }
+
+/*Settings app*/
+.settings-app {
+  height: 100%;
+  display: flex;
+  background: #141a20;
+}
+
+.settings-sidebar {
+  width: 180px;
+  background: #1a222a;
+  border-right: 1px solid #2a343e;
+  padding: 12px;
+}
+
+.settings-sidebar .setting-category {
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #b0c6d4;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+}
+
+.settings-sidebar .setting-category:hover { background: #2a343e; }
+.settings-sidebar .setting-category.active { background: #2a3a48; color: #d4e2ed; }
+
+.settings-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.setting-group { margin-bottom: 20px; }
+.setting-group label {
+  display: block;
+  color: #b0c6d4;
+  font-size: 0.75rem;
+  margin-bottom: 6px;
+}
+
+.setting-group input[type="color"],
+.setting-group select {
+  background: #0d1117;
+  border: 1px solid #2a343e;
+  border-radius: 6px;
+  color: #c8dae6;
+  padding: 6px 12px;
+  width: 100%;
+  max-width: 200px;
+}
+
+.setting-group select option { background: #141a20; }
+
+/*Calculator app*/
+.calc-app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: #141a20;
+}
+
+.calc-display {
+  background: #0d1117;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: right;
+  font-size: 2rem;
+  color: #d4e2ed;
+  margin-bottom: 12px;
+  min-height: 80px;
+  font-family: monospace;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  flex: 1;
+}
+
+.calc-grid button {
+  background: #1a222a;
+  border: 1px solid #2a343e;
+  border-radius: 8px;
+  color: #c8dae6;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.05s;
+}
+
+.calc-grid button:hover { background: #2a343e; }
+.calc-grid .calc-op { color: #5bc97a; }
+.calc-grid .calc-eq { background: #2a5a4a; color: #d4e2ed; }
+.calc-grid .calc-clear { color: #e4646a; }
+
+/*System monitor*/
+.monitor-app {
+  height: 100%;
+  padding: 16px;
+  background: #141a20;
+  overflow-y: auto;
+}
+
+.monitor-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.monitor-card {
+  background: #1a222a;
+  border: 1px solid #2a343e;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.monitor-card h4 {
+  color: #8aaec9;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.monitor-card .value {
+  font-size: 1.5rem;
+  color: #d4e2ed;
+  font-weight: 500;
+}
+
+.monitor-processes {
+  background: #1a222a;
+  border: 1px solid #2a343e;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.monitor-processes table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.monitor-processes th {
+  text-align: left;
+  padding: 8px 12px;
+  background: #0d1117;
+  color: #8aaec9;
+  font-weight: 500;
+}
+
+.monitor-processes td {
+  padding: 6px 12px;
+  color: #b0c6d4;
+  border-top: 1px solid #2a343e;
+}
+
+/*Browser app*/
+.browser-app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #141a20;
+}
+
+.browser-toolbar {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #2a343e;
+  background: #1a222a;
+  align-items: center;
+}
+
+.browser-toolbar button {
+  background: transparent;
+  border: none;
+  color: #b0c6d4;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.browser-toolbar button:hover { background: #2a343e; }
+
+.browser-url {
+  flex: 1;
+  background: #0d1117;
+  border: 1px solid #2a343e;
+  border-radius: 20px;
+  padding: 4px 16px;
+  color: #c8dae6;
+  font-size: 0.75rem;
+  outline: none;
+}
+
+.browser-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.browser-content .site-card {
+  background: #1a222a;
+  border: 1px solid #2a343e;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: 0.1s;
+}
+
+.browser-content .site-card:hover { background: #2a343e; }
+.browser-content .site-card h4 { color: #d4e2ed; margin-bottom: 4px; }
+.browser-content .site-card p { color: #8aaec9; font-size: 0.7rem; }
