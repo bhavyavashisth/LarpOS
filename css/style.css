@@ -1,0 +1,121 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+body {
+  background: #0a0c0e;
+  font-family: -apple-system, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  color: #eaeef2;
+}
+
+/*Boot screen*/
+#boot {
+  position: fixed;
+  inset: 0;
+  background: #0a0c0e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.8s ease;
+}
+
+#boot.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-box {
+  background: #14181c;
+  border: 1px solid #2a3036;
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  min-width: 520px;
+  max-width: 640px;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.02);
+}
+
+.boot-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #6a7a84;
+  border-bottom: 1px solid #252c32;
+  padding-bottom: 0.6rem;
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.3px;
+}
+
+.boot-log {
+  font-family: 'Menlo', 'Monaco', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: #b6c8d2;
+  min-height: 280px;
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #2a3036 transparent;
+  padding-right: 4px;
+}
+
+.boot-log::-webkit-scrollbar { width: 6px; }
+.boot-log::-webkit-scrollbar-track { background: transparent; }
+.boot-log::-webkit-scrollbar-thumb { background: #2a3036; border-radius: 8px; }
+
+.log-line { display: flex; gap: 0.8rem; padding: 0 2px; }
+.log-line .prefix { color: #5f7a8a; white-space: pre; min-width: 70px; }
+.log-line .msg { color: #d4e2ed; }
+.log-line .ok { color: #5bc97a; }
+.log-line .fail { color: #e4646a; }
+.log-line .highlight { color: #f5c542; }
+
+.progress-track {
+  margin-top: 1.2rem;
+  background: #1e262c;
+  border-radius: 40px;
+  height: 6px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #5bc97a;
+  transition: width 0.15s linear;
+  border-radius: 40px;
+}
+
+.boot-footer {
+  margin-top: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #5f7482;
+  border-top: 1px solid #1e262c;
+  padding-top: 0.8rem;
+}
+
+.boot-footer .skip {
+  background: transparent;
+  border: 1px solid #2f3a42;
+  color: #a0b4c2;
+  padding: 0.2rem 1rem;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.boot-footer .skip:hover {
+  background: #1e262c;
+  border-color: #4a5a66;
+  color: #d4e2ed;
+}
