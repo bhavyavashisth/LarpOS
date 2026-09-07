@@ -5,135 +5,59 @@ export default class TerminalApp {
     this.appManager = appManager;
     this.history = [];
     this.historyIndex = 0;
-    this.outputEl = null;
-    this.inputEl = null;
-    this.container = null;
-    
-    // Define commands
     this.commands = {
-      help: () => this.showHelp(),
-      clear: () => this.clearTerminal(),
-      history: () => this.showHistory(),
-      pwd: () => this.showPwd(),
-      ls: (args) => this.listDir(args),
-      cd: (args) => this.changeDir(args),
-      cat: (args) => this.catFile(args),
-      mkdir: (args) => this.makeDir(args),
-      touch: (args) => this.touchFile(args),
-      echo: (args) => this.echoText(args),
-      whoami: () => this.whoAmI(),
-      date: () => this.showDate(),
-      uname: () => this.showUname(),
-      neofetch: () => this.showNeofetch(),
-      ps: () => this.showPs(),
-      sudo: (args) => this.sudoCmd(args),
-      scan: () => this.scanNetwork(),
-      ping: (args) => this.pingHost(args),
-      hack: (args) => this.hackTarget(args),
-      matrix: () => this.showMatrix(),
-      fortune: () => this.showFortune(),
-      coffee: () => this.makeCoffee(),
-      rickroll: () => this.rickrollCmd()
+      help: this.help.bind(this),
+      clear: this.clear.bind(this),
+      history: this.showHistory.bind(this),
+      pwd: this.pwd.bind(this),
+      ls: this.ls.bind(this),
+      cd: this.cd.bind(this),
+      cat: this.cat.bind(this),
+      mkdir: this.mkdir.bind(this),
+      touch: this.touch.bind(this),
+      echo: this.echo.bind(this),
+      whoami: this.whoami.bind(this),
+      date: this.date.bind(this),
+      uname: this.uname.bind(this),
+      neofetch: this.neofetch.bind(this),
+      ps: this.ps.bind(this),
+      sudo: this.sudo.bind(this),
+      scan: this.scan.bind(this),
+      ping: this.ping.bind(this),
+      hack: this.hack.bind(this),
+      matrix: this.matrix.bind(this),
+      fortune: this.fortune.bind(this),
+      coffee: this.coffee.bind(this),
+      rickroll: this.rickroll.bind(this),
+      'sudo make-me-root': this.makeMeRoot.bind(this),
+      'sudo touch-grass': this.touchGrass.bind(this)
     };
+    this.output = [];
+    this.buffer = '';
+    this.inputLine = null;
   }
 
   render(container) {
+    container.innerHTML = `
+      <div class="terminal-app" id="terminal-output" style="height:100%;overflow-y:auto;padding:8px 12px;font-family:monospace;font-size:0.85rem;background:#0d1117;color:#c9d1d9;">
+        <div style="color:#5bc97a;">LARP OS v1.0 — terminal ready</div>
+        <div style="color:#6a7a84;margin-bottom:8px;">Type 'help' for commands</div>
+        <div id="terminal-history"></div>
+        <div class="terminal-input-line">
+          <span class="terminal-prompt">larp@larp-os:~$</span>
+          <input type="text" class="terminal-input" id="terminal-input" autofocus style="background:transparent;border:none;color:#c9d1d9;font-family:monospace;font-size:0.85rem;flex:1;outline:none;" />
+        </div>
+      </div>
+    `;
+
+    this.outputEl = container.querySelector('#terminal-history');
+    this.inputEl = container.querySelector('#terminal-input');
     this.container = container;
-    container.style.cssText = `
-      height: 100%;
-      background: #0d1117;
-      font-family: 'Menlo', 'Monaco', 'Fira Code', monospace;
-      font-size: 0.85rem;
-      padding: 0;
-      overflow: hidden;
-    `;
-
-    // Create terminal container
-    const terminalDiv = document.createElement('div');
-    terminalDiv.style.cssText = `
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      padding: 8px 12px;
-      color: #c9d1d9;
-    `;
-
-    // Output area
-    const outputDiv = document.createElement('div');
-    outputDiv.style.cssText = `
-      flex: 1;
-      overflow-y: auto;
-      padding: 4px 0;
-    `;
-    outputDiv.id = 'terminal-output';
-
-    // Welcome message
-    const welcome = document.createElement('div');
-    welcome.style.cssText = 'color: #5bc97a; margin-bottom: 4px;';
-    welcome.textContent = 'LARP OS v1.0 — terminal ready';
-    outputDiv.appendChild(welcome);
-
-    const info = document.createElement('div');
-    info.style.cssText = 'color: #6a7a84; margin-bottom: 8px;';
-    info.textContent = "Type 'help' for commands";
-    outputDiv.appendChild(info);
-
-    // Input area
-    const inputDiv = document.createElement('div');
-    inputDiv.style.cssText = `
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-      padding-top: 4px;
-      border-top: 1px solid #1a222a;
-    `;
-
-    const prompt = document.createElement('span');
-    prompt.style.cssText = 'color: #5bc97a; font-weight: 500;';
-    prompt.textContent = 'larp@larp-os:~$';
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.style.cssText = `
-      background: transparent;
-      border: none;
-      color: #c9d1d9;
-      font-family: inherit;
-      font-size: 0.85rem;
-      flex: 1;
-      outline: none;
-      padding: 2px 0;
-    `;
-    input.autofocus = true;
-
-    inputDiv.appendChild(prompt);
-    inputDiv.appendChild(input);
-    terminalDiv.appendChild(outputDiv);
-    terminalDiv.appendChild(inputDiv);
-    container.appendChild(terminalDiv);
-
-    // Store references
-    this.outputEl = outputDiv;
-    this.inputEl = input;
-
-    // Setup event listeners
-    this.setupInputHandlers();
-    
-    // Focus input
-    setTimeout(() => input.focus(), 100);
-  }
-
-  setupInputHandlers() {
-    if (!this.inputEl) return;
 
     this.inputEl.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        const cmd = this.inputEl.value.trim();
-        if (cmd) {
-          this.executeCommand(cmd);
-          this.inputEl.value = '';
-        }
+        this.executeCommand(this.inputEl.value);
+        this.inputEl.value = '';
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         if (this.historyIndex > 0) {
@@ -152,13 +76,12 @@ export default class TerminalApp {
       }
     });
 
-    // Focus on click
-    this.container.addEventListener('click', () => {
-      if (this.inputEl) this.inputEl.focus();
-    });
+    setTimeout(() => this.inputEl.focus(), 100);
+    this.container.addEventListener('click', () => this.inputEl.focus());
   }
 
-  executeCommand(cmd) {
+  executeCommand(input) {
+    const cmd = input.trim();
     if (!cmd) return;
     
     this.history.push(cmd);
@@ -173,136 +96,121 @@ export default class TerminalApp {
     if (this.commands[command]) {
       this.commands[command](args);
     } else {
-      this.appendOutput(`<span style="color: #e4646a;">command not found: ${command}</span>`);
-    }
-    
-    if (this.outputEl) {
-      this.outputEl.scrollTop = this.outputEl.scrollHeight;
+      this.appendOutput(`<span class="terminal-error">command not found: ${command}</span>`);
     }
   }
 
   appendOutput(html) {
-    if (!this.outputEl) return;
     const div = document.createElement('div');
-    div.style.cssText = 'margin: 2px 0; line-height: 1.6;';
+    div.className = 'terminal-output';
     div.innerHTML = html;
     this.outputEl.appendChild(div);
     this.outputEl.scrollTop = this.outputEl.scrollHeight;
   }
 
-  // Command implementations
-  showHelp() {
+  // Commands
+  help() {
     const cmds = Object.keys(this.commands).sort().join(', ');
-    this.appendOutput(`<span style="color: #8aaec9;">Available commands:</span> ${cmds}`);
+    this.appendOutput(`Available commands: ${cmds}`);
   }
 
-  clearTerminal() {
-    if (this.outputEl) {
-      this.outputEl.innerHTML = '';
-    }
+  clear() {
+    this.outputEl.innerHTML = '';
   }
 
   showHistory() {
-    if (this.history.length === 0) {
-      this.appendOutput('<span style="color: #6a7a84;">No commands in history</span>');
-      return;
-    }
     this.history.forEach((cmd, i) => {
-      this.appendOutput(`  ${String(i+1).padStart(3)}  ${cmd}`);
+      this.appendOutput(`  ${i+1}  ${cmd}`);
     });
   }
 
-  showPwd() {
+  pwd() {
     this.appendOutput(this.fs.getCwd());
   }
 
-  listDir(args) {
+  ls(args) {
     const path = args[0] || this.fs.getCwd();
     const files = this.fs.listDir(path);
     if (files) {
-      if (files.length === 0) {
-        this.appendOutput('<span style="color: #6a7a84;">(empty directory)</span>');
-      } else {
-        this.appendOutput(files.join('  '));
-      }
+      this.appendOutput(files.join('  '));
     } else {
-      this.appendOutput(`<span style="color: #e4646a;">ls: cannot access '${path}': No such file or directory</span>`);
+      this.appendOutput(`<span class="terminal-error">ls: cannot access '${path}': No such file or directory</span>`);
     }
   }
 
-  changeDir(args) {
+  cd(args) {
     if (!args.length) {
       this.fs.cd('/home/larp');
       return;
     }
     const success = this.fs.cd(args[0]);
     if (!success) {
-      this.appendOutput(`<span style="color: #e4646a;">cd: no such directory: ${args[0]}</span>`);
+      this.appendOutput(`<span class="terminal-error">cd: no such directory: ${args[0]}</span>`);
     }
   }
 
-  catFile(args) {
+  cat(args) {
     if (!args.length) {
-      this.appendOutput('<span style="color: #e4646a;">cat: missing file operand</span>');
+      this.appendOutput('<span class="terminal-error">cat: missing file operand</span>');
       return;
     }
     const content = this.fs.readFile(args[0]);
     if (content !== null) {
-      this.appendOutput(content || '<span style="color: #6a7a84;">(empty file)</span>');
+      this.appendOutput(content);
     } else {
-      this.appendOutput(`<span style="color: #e4646a;">cat: ${args[0]}: No such file or directory</span>`);
+      this.appendOutput(`<span class="terminal-error">cat: ${args[0]}: No such file or directory</span>`);
     }
   }
 
-  makeDir(args) {
+  mkdir(args) {
     if (!args.length) {
-      this.appendOutput('<span style="color: #e4646a;">mkdir: missing operand</span>');
+      this.appendOutput('<span class="terminal-error">mkdir: missing operand</span>');
       return;
     }
     const success = this.fs.mkdir(args[0]);
     if (!success) {
-      this.appendOutput(`<span style="color: #e4646a;">mkdir: cannot create directory '${args[0]}'</span>`);
+      this.appendOutput(`<span class="terminal-error">mkdir: cannot create directory '${args[0]}'</span>`);
     }
   }
 
-  touchFile(args) {
+  touch(args) {
     if (!args.length) {
-      this.appendOutput('<span style="color: #e4646a;">touch: missing file operand</span>');
+      this.appendOutput('<span class="terminal-error">touch: missing file operand</span>');
       return;
     }
     const success = this.fs.touch(args[0]);
     if (!success) {
-      this.appendOutput(`<span style="color: #e4646a;">touch: cannot touch '${args[0]}'</span>`);
+      this.appendOutput(`<span class="terminal-error">touch: cannot touch sorry T_T '${args[0]}'</span>`);
     }
   }
 
-  echoText(args) {
+  echo(args) {
     this.appendOutput(args.join(' '));
   }
 
-  whoAmI() {
+  whoami() {
     this.appendOutput('larp');
   }
 
-  showDate() {
+  date() {
     this.appendOutput(new Date().toString());
   }
 
-  showUname() {
+  uname() {
     this.appendOutput('LARP OS 1.0 x86_64');
   }
 
-  showNeofetch() {
+  neofetch() {
     this.appendOutput(`
-      OS: LARP OS 1.0 x86_64
-      Kernel: LARP 6.66
-      Shell: larp-sh
-      Uptime: ${Math.floor(Math.random() * 24)}h ${Math.floor(Math.random() * 60)}m
-      Memory: ${Math.floor(Math.random() * 8 + 2)}GB / 16GB
+      <span style="color:#5bc97a;">OS:</span> LARP OS 1.0 x86_64
+      <span style="color:#5bc97a;">Kernel:</span> LARP 6.66
+      <span style="color:#5bc97a;">Shell:</span> larp-sh
+      <span style="color:#5bc97a;">Uptime:</span> ${Math.floor(Math.random() * 24)}h ${Math.floor(Math.random() * 60)}m
+      <span style="color:#5bc97a;">Memory:</span> ${Math.floor(Math.random() * 8 + 2)}GB / 16GB
     `);
   }
 
-  showPs() {
+  ps() {
     this.appendOutput(`
       PID   PROCESS              CPU    MEM
       01    kernel               2.1%   312MB
@@ -312,103 +220,105 @@ export default class TerminalApp {
     `);
   }
 
-  sudoCmd(args) {
+  sudo(args) {
     if (args.length === 0) {
-      this.appendOutput('<span style="color: #e4646a;">sudo: missing command</span>');
+      this.appendOutput('<span class="terminal-error">sudo: missing command</span>');
       return;
     }
     const cmd = args.join(' ');
     if (cmd === 'make-me-root') {
-      this.appendOutput(`
-        <span style="color: #f5c542;">ERROR: Permission denied.</span>
-        <span style="color: #6a7a84;">You are already root in your heart.</span>
-      `);
+      this.makeMeRoot();
     } else if (cmd === 'touch-grass') {
-      this.appendOutput(`
-        <span style="color: #f5c542;">Permission denied.</span>
-        <span style="color: #6a7a84;">Grass is outside.</span>
-      `);
+      this.touchGrass();
     } else if (cmd === 'rm -rf /') {
       this.appendOutput(`
-        <span style="color: #f5c542;">Nice try.</span>
-        <span style="color: #6a7a84;">LARP OS has protected the virtual filesystem.</span>
-        <span style="color: #6a7a84;">Nothing was deleted.</span>
+        <span class="terminal-highlight">Nice try.</span>
+        LARP OS has protected the virtual filesystem.
+        Nothing was deleted.
       `);
     } else {
-      this.appendOutput(`<span style="color: #5bc97a;">[sudo] permission granted for: ${cmd}</span>`);
+      this.appendOutput(`<span class="terminal-success">[sudo] permission granted for: ${cmd}</span>`);
     }
   }
 
-  scanNetwork() {
+  makeMeRoot() {
     this.appendOutput(`
-      Scanning network...
-      192.168.1.1 (router) - alive
-      192.168.1.42 (larp-pc) - alive
-      192.168.1.69 (ASAN-node) - alive
-      192.168.1.1337 (hacker-node) - alive
+      <span class="terminal-highlight">ERROR: Permission denied.</span>
+      <span style="color:#6a7a84;">You are already root in your heart.</span>
     `);
   }
 
-  pingHost(args) {
+  touchGrass() {
+    this.appendOutput(`
+      <span class="terminal-highlight">Permission denied.</span>
+      <span style="color:#6a7a84;">Grass is outside.</span>
+    `);
+  }
+
+  scan() {
+    this.appendOutput(`
+      <span style="color:#5bc97a;">Scanning network...</span>
+      <span style="color:#6a7a84;">192.168.1.1 (router) - alive</span>
+      <span style="color:#6a7a84;">192.168.1.42 (larp-pc) - alive</span>
+      <span style="color:#6a7a84;">192.168.1.69 (ASAN-node) - alive</span>
+      <span style="color:#6a7a84;">192.168.1.1337 (hacker-node) - alive</span>
+    `);
+  }
+
+  ping(args) {
     const target = args[0] || 'localhost';
-    const times = [Math.floor(Math.random() * 20 + 1), Math.floor(Math.random() * 20 + 1), Math.floor(Math.random() * 20 + 1)];
     this.appendOutput(`
-      PING ${target}
-      64 bytes from ${target}: icmp_seq=1 ttl=64 time=${times[0]}ms
-      64 bytes from ${target}: icmp_seq=2 ttl=64 time=${times[1]}ms
-      64 bytes from ${target}: icmp_seq=3 ttl=64 time=${times[2]}ms
+      <span style="color:#5bc97a;">PING ${target}</span>
+      <span style="color:#6a7a84;">64 bytes from ${target}: icmp_seq=1 ttl=64 time=${Math.floor(Math.random() * 20 + 1)}ms</span>
+      <span style="color:#6a7a84;">64 bytes from ${target}: icmp_seq=2 ttl=64 time=${Math.floor(Math.random() * 20 + 1)}ms</span>
+      <span style="color:#6a7a84;">64 bytes from ${target}: icmp_seq=3 ttl=64 time=${Math.floor(Math.random() * 20 + 1)}ms</span>
     `);
   }
 
-  hackTarget(args) {
+  hack(args) {
     const target = args[0] || 'ASAN';
     this.appendOutput(`
-      <span style="color: #f5c542;">INITIATING HACK SEQUENCE...</span>
-      Connecting to ${target}...
-      Bypassing firewall...
-      Injecting payload...
-      <span style="color: #5bc97a;">ACCESS GRANTED</span>
-      Welcome to ${target} internal network.
+      <span class="terminal-highlight">INITIATING HACK SEQUENCE...</span>
+      <span style="color:#6a7a84;">Connecting to ${target}...</span>
+      <span style="color:#6a7a84;">Bypassing firewall...</span>
+      <span style="color:#6a7a84;">Injecting payload...</span>
+      <span class="terminal-success">ACCESS GRANTED</span>
+      <span style="color:#6a7a84;">Welcome to ${target} internal network.</span>
     `);
   }
 
-  showMatrix() {
-    for (let i = 0; i < 5; i++) {
-      let line = '';
-      for (let j = 0; j < 50; j++) {
-        line += Math.random() > 0.7 ? String.fromCharCode(65 + Math.random() * 26) : ' ';
-      }
-      this.appendOutput(`<span style="color: #5bc97a;">${line}</span>`);
-    }
-    this.appendOutput('<span style="color: #6a7a84;">Follow the white rabbit...</span>');
+  matrix() {
+    this.appendOutput(`
+      <span style="color:#5bc97a;">${Array(40).fill('').map(() => Math.random() > 0.7 ? Math.random().toString(36).substr(2, 1) : ' ').join('')}</span>
+      <span style="color:#5bc97a;">${Array(40).fill('').map(() => Math.random() > 0.7 ? Math.random().toString(36).substr(2, 1) : ' ').join('')}</span>
+      <span style="color:#5bc97a;">${Array(40).fill('').map(() => Math.random() > 0.7 ? Math.random().toString(36).substr(2, 1) : ' ').join('')}</span>
+      <span style="color:#6a7a84;">Follow the white rabbit...</span>
+    `);
   }
 
-  showFortune() {
+  fortune() {
     const fortunes = [
       'You will find a bug in your code. Actually, you wrote it.',
       'Your hard drive is spinning. Mostly in circles.',
       'LARP OS: because reality is overrated.',
       'The cake is a lie. So is your uptime.',
-      'sudo make me a sandwich — Permission denied.',
-      'In the beginning there was nothing. And then it crashed.'
+      'sudo make me a sandwich — Permission denied.'
     ];
     this.appendOutput(fortunes[Math.floor(Math.random() * fortunes.length)]);
   }
 
-  makeCoffee() {
+  coffee() {
     this.appendOutput(`
-      <span style="color: #f5c542;">☕ Brewing coffee...</span>
-      Coffee ready. Your productivity is now +10% for 2 hours.
+      <span style="color:#f5c542;">☕ Brewing coffee...</span>
+      <span style="color:#6a7a84;">Coffee ready. Your productivity is now +10% for 2 hours.</span>
     `);
   }
 
-  rickrollCmd() {
-    if (this.appManager) {
-      this.appManager.launch('music');
-      this.appendOutput(`
-        <span style="color: #f5c542;">🎵 You have been successfully rickrolled.</span>
-        <span style="color: #6a7a84;">There is no patch.</span>
-      `);
-    }
+  rickroll() {
+    this.appManager.launch('music');
+    this.appendOutput(`
+      <span class="terminal-highlight">🎵 You have been successfully rickrolled.</span>
+      <span style="color:#6a7a84;">There is no patch.</span>
+    `);
   }
 }

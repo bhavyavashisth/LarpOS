@@ -1,4 +1,3 @@
-// js/appManager.js - Application manager
 import TerminalApp from './apps/terminal.js';
 import FilesApp from './apps/files.js';
 import NotesApp from './apps/notes.js';
