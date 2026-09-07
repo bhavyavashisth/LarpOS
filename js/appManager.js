@@ -1,3 +1,4 @@
+
 import TerminalApp from './apps/terminal.js';
 import FilesApp from './apps/files.js';
 import NotesApp from './apps/notes.js';
@@ -12,12 +13,12 @@ export default class AppManager {
     this.wm = windowManager;
     this.fs = fs;
     this.apps = {
-      terminal: { title: 'Terminal', icon: 'fas fa-terminal', width: 520, height: 360, class: TerminalApp },
+      terminal: { title: 'Terminal', icon: 'fas fa-terminal', width: 540, height: 380, class: TerminalApp },
       finder: { title: 'Finder', icon: 'fas fa-folder', width: 560, height: 400, class: FilesApp },
       notes: { title: 'DeadDrop Notes', icon: 'fas fa-sticky-note', width: 500, height: 380, class: NotesApp },
       music: { title: 'LARP Music', icon: 'fas fa-music', width: 540, height: 420, class: MusicApp },
       settings: { title: 'Settings', icon: 'fas fa-sliders-h', width: 560, height: 440, class: SettingsApp },
-      calculator: { title: 'Calculator', icon: 'fas fa-calculator', width: 320, height: 480, class: CalculatorApp },
+      calculator: { title: 'Calculator', icon: 'fas fa-calculator', width: 340, height: 480, class: CalculatorApp },
       monitor: { title: 'proc://', icon: 'fas fa-chart-line', width: 580, height: 440, class: MonitorApp },
       browser: { title: 'LARP Browser', icon: 'fas fa-compass', width: 640, height: 480, class: BrowserApp }
     };
@@ -37,8 +38,11 @@ export default class AppManager {
     const appDef = this.apps[id];
     if (!appDef) return;
 
+    
     const appInstance = new appDef.class(this.fs, this);
     const body = this.wm.getBody(winData);
+    
+    body.innerHTML = '';
     appInstance.render(body);
 
     this.runningApps[id] = winData;
