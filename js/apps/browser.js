@@ -1,9 +1,13 @@
 export default class BrowserApp {
-  constructor(fs) {
+  constructor(fs, appManager) {
     this.fs = fs;
+    this.appManager = appManager;
     this.history = [];
     this.bookmarks = [];
     this.currentUrl = 'about:larp';
+    this.currentTitle = 'LARP Browser';
+
+    //websites
     this.sites = {
       'asan.larp': {
         title: 'ASAN - Advanced Space Agency of Nothing',
@@ -143,6 +147,7 @@ export default class BrowserApp {
     this.content = container.querySelector('#browser-content');
     this.pageContainer = container.querySelector('#browser-page');
 
+    //toolbar
     container.querySelector('#browser-back').addEventListener('click', () => this.goBack());
     container.querySelector('#browser-forward').addEventListener('click', () => this.goForward());
     container.querySelector('#browser-refresh').addEventListener('click', () => this.refresh());
@@ -152,11 +157,11 @@ export default class BrowserApp {
     this.urlInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const value = this.urlInput.value.trim();
+
         if (value.startsWith('http://') || value.startsWith('https://')) {
           this.navigate(value);
-        } else if (value.includes('youtube') || value.includes('youtube.com') || value.includes('youtu.be')) {
-          //Rickroll!
-          this.loadRickroll();
+        } else if (value.includes('youtube') || value.includes('youtu.be') || value.includes('youtube.com')) {
+          this.loadRickroll();  
         } else if (value.includes('.')) {
           this.navigate(value);
         } else {
@@ -165,10 +170,12 @@ export default class BrowserApp {
       }
     });
 
+    //homepage
     this.currentUrl = 'about:larp';
     this.navigate('about:larp');
   }
 
+  //navigation
   navigate(url) {
     this.currentUrl = url;
     this.urlInput.value = url;
@@ -212,6 +219,7 @@ export default class BrowserApp {
     this.currentTitle = title;
   }
 
+  //search
   search(query) {
     if (query.toLowerCase().includes('youtube')) {
       this.loadRickroll();
@@ -227,17 +235,16 @@ export default class BrowserApp {
     }
   }
 
+  //rickroll
   loadRickroll() {
     this.pageContainer.innerHTML = `
       <div style="padding:20px;text-align:center;">
         <h2 style="color:#f5c542;margin-bottom:16px;">🎵 You've been Rickrolled!</h2>
         <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;border-radius:8px;">
-          <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" 
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
-            frameborder="0" 
-            allow="autoplay; encrypted-media" 
-            allowfullscreen>
-          </iframe>
+          <video style="position:absolute;top:0;left:0;width:100%;height:100%;" controls autoplay>
+            <source src="assets/video/rickroll.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
         </div>
         <p style="color:#6a7a84;margin-top:12px;">There is no patch.</p>
       </div>
@@ -249,10 +256,23 @@ export default class BrowserApp {
     }
   }
 
-  goBack() { /*simple reload*/ this.refresh(); }
-  goForward() { this.refresh(); }
-  refresh() { this.loadPage(this.currentUrl); }
-  goHome() { this.navigate('about:larp'); }
+  //nevigation
+  goBack() {
+    this.refresh(); 
+  }
+
+  goForward() {
+    this.refresh();
+  }
+
+  refresh() {
+    this.loadPage(this.currentUrl);
+  }
+
+  goHome() {
+    this.navigate('about:larp');
+  }
+
   bookmarkPage() {
     if (this.currentUrl && this.currentUrl !== 'about:larp') {
       if (!this.bookmarks.includes(this.currentUrl)) {

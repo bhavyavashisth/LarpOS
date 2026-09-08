@@ -3,16 +3,15 @@ export default class MusicApp {
     this.fs = fs;
     this.track = {
       id: 1,
-      title: 'Best music of all time',
-      artist: '?????????',
-      duration: '3:33',
-      artwork: '🎤',
-      rickroll: true
+      title: 'Chicken Scream',
+      artist: 'The Barnyard',
+      duration: '0:04',
+      artwork: '👁',
+      file: 'assets/audio/chicken_scream.mp3'
     };
     this.playing = false;
-    this.currentTime = 0;
-    this.interval = null;
     this.audio = null;
+    this.interval = null;
   }
 
   render(container) {
@@ -24,7 +23,7 @@ export default class MusicApp {
         </div>
         <div class="music-player" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;">
           <div class="music-artwork" style="width:180px;height:180px;border-radius:12px;background:linear-gradient(135deg,#2a3a48,#1a222a);display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-            <i class="fas fa-music" style="font-size:4rem;color:#6a8a9e;"></i>
+            <span style="font-size:5rem;">${this.track.artwork}</span>
           </div>
           <div id="music-title" style="color:#d4e2ed;font-size:1.4rem;font-weight:500;">${this.track.title}</div>
           <div id="music-artist" style="color:#6a7a84;font-size:0.9rem;margin-bottom:16px;">${this.track.artist}</div>
@@ -51,60 +50,51 @@ export default class MusicApp {
 
     this.container = container;
     this.playBtn = container.querySelector('#music-play');
-    this.titleEl = container.querySelector('#music-title');
-    this.artistEl = container.querySelector('#music-artist');
     this.progressFill = container.querySelector('#music-progress-fill');
     this.timeCurrent = container.querySelector('#music-time-current');
     this.timeTotal = container.querySelector('#music-time-total');
+
+    this.audio = new Audio(this.track.file);
+    this.audio.addEventListener('timeupdate', this.updateProgress.bind(this));
+    this.audio.addEventListener('ended', this.onEnded.bind(this));
 
     container.querySelector('#music-play').addEventListener('click', () => {
       this.togglePlay();
     });
 
-    if (this.track.rickroll) {
-      this.showRickrollNotification();
-    }
+    this.showChickenNotification();
   }
 
   togglePlay() {
     this.playing = !this.playing;
     this.playBtn.innerHTML = this.playing ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
     if (this.playing) {
-      if (!this.interval) {
-        this.interval = setInterval(() => {
-          this.currentTime += 1;
-          const mins = Math.floor(this.currentTime / 60);
-          const secs = Math.floor(this.currentTime % 60);
-          this.timeCurrent.textContent = mins + ':' + String(secs).padStart(2, '0');
-          const totalSecs = this.parseDuration(this.track.duration);
-          const progress = totalSecs > 0 ? (this.currentTime / totalSecs) * 100 : 0;
-          this.progressFill.style.width = Math.min(progress, 100) + '%';
-          
-          if (this.currentTime >= totalSecs) {
-            clearInterval(this.interval);
-            this.interval = null;
-            this.playing = false;
-            this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
-            this.currentTime = 0;
-            this.progressFill.style.width = '0%';
-            this.timeCurrent.textContent = '0:00';
-          }
-        }, 1000);
-      }
+      this.audio.play();
     } else {
-      if (this.interval) {
-        clearInterval(this.interval);
-        this.interval = null;
-      }
+      this.audio.pause();
     }
   }
 
-  parseDuration(duration) {
-    const parts = duration.split(':');
-    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+  updateProgress() {
+    if (!this.audio) return;
+    const current = this.audio.currentTime;
+    const total = this.audio.duration || 1;
+    const mins = Math.floor(current / 60);
+    const secs = Math.floor(current % 60);
+    this.timeCurrent.textContent = mins + ':' + String(secs).padStart(2, '0');
+    const progress = total > 0 ? (current / total) * 100 : 0;
+    this.progressFill.style.width = Math.min(progress, 100) + '%';
   }
 
-  showRickrollNotification() {
+  onEnded() {
+    this.playing = false;
+    this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
+    this.audio.currentTime = 0;
+    this.progressFill.style.width = '0%';
+    this.timeCurrent.textContent = '0:00';
+  }
+
+  showChickenNotification() {
     const notif = document.createElement('div');
     notif.style.cssText = `
       position:fixed;bottom:100px;left:50%;transform:translateX(-50%);
@@ -115,10 +105,10 @@ export default class MusicApp {
     `;
     notif.innerHTML = `
       <div style="display:flex;align-items:center;gap:12px;">
-        <i class="fas fa-exclamation-triangle" style="color:#f5c542;font-size:1.2rem;"></i>
+        <span style="font-size:2rem;">🐔</span>
         <div>
-          <div style="font-weight:500;">SYSTEM ALERT</div>
-          <div style="font-size:0.8rem;color:#8aaec9;">You have been successfully rickrolled. There is no patch.</div>
+          <div style="font-weight:500;">CHICKEN ALERT</div>
+          <div style="font-size:0.8rem;color:#8aaec9;">You are now listening to the ultimate chicken scream.</div>
         </div>
       </div>
     `;
@@ -127,13 +117,13 @@ export default class MusicApp {
       notif.style.opacity = '0';
       notif.style.transition = 'opacity 0.5s';
       setTimeout(() => notif.remove(), 500);
-    }, 4000);
+    }, 3000);
   }
 
   onClose() {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = null;
+    if (this.audio) {
+      this.audio.pause();
+      this.audio = null;
     }
   }
 }
