@@ -2,7 +2,7 @@ export default class SettingsApp {
   constructor(fs) {
     this.fs = fs;
     this.settings = {
-      wallpaper: '#1a1e24',
+      wallpaper: 'assets/wallpapers/dark.jpg',
       accentColor: '#5bc97a',
       dockPosition: 'bottom',
       autoHideDock: false,
@@ -10,21 +10,52 @@ export default class SettingsApp {
       terminalFont: 'Menlo',
       terminalSize: 'medium'
     };
+    this.wallpapers = [
+      'assets/wallpapers/dark.jpg',
+      'assets/wallpapers/cyberpunk.jpg',
+      'assets/wallpapers/matrix.jpg',
+      'assets/wallpapers/ghost.jpg',
+      'assets/wallpapers/corporate.jpg'
+    ];
     this.loadSettings();
+    
+    window.__larp_settings_instance = this;
   }
 
   loadSettings() {
-
     try {
       const data = this.fs.readFile('/home/larp/.larp-settings.json');
       if (data) {
         this.settings = JSON.parse(data);
       }
-    } catch (e) {}
+    } catch (e) {
+      
+    }
   }
 
   saveSettings() {
     this.fs.writeFile('/home/larp/.larp-settings.json', JSON.stringify(this.settings));
+    this.applyWallpaper(this.settings.wallpaper);
+    this.applyAccentColor(this.settings.accentColor);
+  }
+
+  applyWallpaper(path) {
+    const desktop = document.getElementById('desktop');
+    if (desktop) {
+      desktop.style.backgroundImage = `url('${path}')`;
+      desktop.style.backgroundSize = 'cover';
+      desktop.style.backgroundPosition = 'center';
+    }
+  }
+
+  applyAccentColor(color) {
+    document.querySelectorAll('.terminal-prompt, .music-progress-fill, .ok, .log-line .ok').forEach(el => {
+      el.style.color = color;
+    });
+  
+    document.querySelectorAll('.music-progress-fill, .progress-fill').forEach(el => {
+      el.style.background = color;
+    });
   }
 
   render(container) {
@@ -51,6 +82,9 @@ export default class SettingsApp {
       });
     });
 
+    // Apply current settings on load
+    this.applyWallpaper(this.settings.wallpaper);
+    this.applyAccentColor(this.settings.accentColor);
     this.renderCategory('appearance');
   }
 
@@ -58,29 +92,28 @@ export default class SettingsApp {
     const settings = this.settings;
     let html = '';
 
-    switch(category) {
+    switch (category) {
       case 'appearance':
         html = `
           <h3 style="color:#d4e2ed;margin-bottom:20px;">Appearance</h3>
           <div class="setting-group">
-            <label>Wallpaper Color</label>
-            <input type="color" id="setting-wallpaper" value="${settings.wallpaper}" />
+            <label>Wallpaper</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
+              ${this.wallpapers.map(w => `
+                <div style="cursor:pointer;border:2px solid ${settings.wallpaper === w ? '#5bc97a' : 'transparent'};border-radius:8px;overflow:hidden;width:100px;height:60px;" 
+                     onclick="window.__larp_set_wallpaper('${w}')">
+                  <img src="${w}" style="width:100%;height:100%;object-fit:cover;" />
+                </div>
+              `).join('')}
+            </div>
           </div>
           <div class="setting-group">
             <label>Accent Color</label>
             <input type="color" id="setting-accent" value="${settings.accentColor}" />
           </div>
-          <div class="setting-group">
-            <label>Theme</label>
-            <select id="setting-theme">
-              <option value="cat">LARP Dark</option>
-              <option value="cool">Ghost</option>
-              <option value="barrel">Matrix</option>
-              <option value="guitar">Cyberpunk</option>
-            </select>
-          </div>
         `;
         break;
+
       case 'desktop':
         html = `
           <h3 style="color:#d4e2ed;margin-bottom:20px;">Desktop</h3>
@@ -100,6 +133,7 @@ export default class SettingsApp {
           </div>
         `;
         break;
+
       case 'terminal':
         html = `
           <h3 style="color:#d4e2ed;margin-bottom:20px;">Terminal</h3>
@@ -121,6 +155,7 @@ export default class SettingsApp {
           </div>
         `;
         break;
+
       case 'system':
         html = `
           <h3 style="color:#d4e2ed;margin-bottom:20px;">System</h3>
@@ -146,7 +181,6 @@ export default class SettingsApp {
     }
 
     this.content.innerHTML = html;
-
     this.bindEvents(category);
   }
 
@@ -154,21 +188,11 @@ export default class SettingsApp {
     const settings = this.settings;
 
     if (category === 'appearance') {
-      const wallpaper = this.content.querySelector('#setting-wallpaper');
       const accent = this.content.querySelector('#setting-accent');
-      if (wallpaper) {
-        wallpaper.addEventListener('change', (e) => {
-          settings.wallpaper = e.target.value;
-          document.querySelector('#desktop').style.backgroundImage = `radial-gradient(circle at 20% 30%, ${settings.wallpaper} 0%, #0e1218 90%)`;
-          this.saveSettings();
-        });
-      }
       if (accent) {
-        accent.addEventListener('change', (e) => {
+        accent.addEventListener('input', (e) => {
           settings.accentColor = e.target.value;
-          document.querySelectorAll('.terminal-prompt, .music-progress-fill, .ok').forEach(el => {
-            el.style.color = settings.accentColor;
-          });
+          this.applyAccentColor(settings.accentColor);
           this.saveSettings();
         });
       }
@@ -219,3 +243,21 @@ export default class SettingsApp {
     }
   }
 }
+
+window.__larp_set_wallpaper = (path) => {
+  const instance = window.__larp_settings_instance;
+  if (instance) {
+    instance.settings.wallpaper = path;
+    instance.saveSettings();
+   
+    document.querySelectorAll('.setting-group div[style*="cursor:pointer"]').forEach(el => {
+      el.style.borderColor = 'transparent';
+    });
+    document.querySelectorAll('.setting-group div[style*="cursor:pointer"]').forEach(el => {
+      const img = el.querySelector('img');
+      if (img && img.src.includes(path)) {
+        el.style.borderColor = '#5bc97a';
+      }
+    });
+  }
+};

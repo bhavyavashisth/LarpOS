@@ -246,7 +246,7 @@ export default class BrowserApp {
             Your browser does not support the video tag.
           </video>
         </div>
-        <p style="color:#6a7a84;margin-top:12px;">There is no patch.</p>
+        <p style="color:#6a7a84;margin-top:12px;">XD</p>
       </div>
     `;
     this.currentUrl = 'youtube-rickroll';
