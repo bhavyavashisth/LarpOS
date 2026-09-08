@@ -73,10 +73,10 @@ export default class SettingsApp {
           <div class="setting-group">
             <label>Theme</label>
             <select id="setting-theme">
-              <option value="dark">LARP Dark</option>
-              <option value="ghost">Ghost</option>
-              <option value="matrix">Matrix</option>
-              <option value="cyberpunk">Cyberpunk</option>
+              <option value="cat">LARP Dark</option>
+              <option value="cool">Ghost</option>
+              <option value="barrel">Matrix</option>
+              <option value="guitar">Cyberpunk</option>
             </select>
           </div>
         `;
