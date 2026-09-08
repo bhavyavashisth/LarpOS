@@ -256,7 +256,7 @@ export default class BrowserApp {
     }
   }
 
-  //nevigation
+  // nevigation
   goBack() {
     this.refresh(); 
   }
